@@ -45,6 +45,7 @@ func BuildEditorHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *ht
 	return func(rw http.ResponseWriter, r *http.Request) {
 		plugin.API.LogDebug(_OnlyofficeLoggerPrefix + "got an editor request")
 		serverURL := *plugin.API.GetConfig().ServiceSettings.SiteURL + "/" + _OnlyofficeApiRootSuffix
+		plugin.API.LogDebug("服务器地址:" + serverURL)
 
 		user, err := plugin.API.GetUser(r.Header.Get(plugin.Configuration.MMAuthHeader))
 		if err != nil {
