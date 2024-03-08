@@ -15,11 +15,10 @@
  * limitations under the License.
  *
  */
-import {id as pluginName} from 'manifest';
 
 import {http} from './http';
+import {ONLYOFFICE_PLUGIN_API} from "../util/const";
 
-const ONLYOFFICE_PLUGIN_API = `/plugins/${pluginName}/api`;
 export const ONLYOFFICE_PLUGIN_PERMISSIONS = `${ONLYOFFICE_PLUGIN_API}/permissions`;
 export const ONLYOFFICE_PLUGIN_GET_CODE = `${ONLYOFFICE_PLUGIN_API}/code`;
 
