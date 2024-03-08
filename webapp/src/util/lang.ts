@@ -21,6 +21,7 @@ import de from 'i18n/de.json';
 import es from 'i18n/es.json';
 import it from 'i18n/it.json';
 import fr from 'i18n/fr.json';
+import zh_cn from 'i18n/zh-CN.json';
 
 export function getTranslations(locale?: string) {
     if (locale) {
@@ -28,19 +29,21 @@ export function getTranslations(locale?: string) {
     }
     const currentLocale = locale || window.localStorage.getItem('onlyoffice_locale') || 'en';
     switch (currentLocale) {
-    case 'de':
-        return de;
-    case 'en':
-        return en;
-    case 'es':
-        return es;
-    case 'fr':
-        return fr;
-    case 'it':
-        return it;
-    case 'ru':
-        return ru;
-    default:
-        return en;
+        case 'de':
+            return de;
+        case 'en':
+            return en;
+        case 'es':
+            return es;
+        case 'fr':
+            return fr;
+        case 'it':
+            return it;
+        case 'ru':
+            return ru;
+        case "zh-CN":
+            return zh_cn
+        default:
+            return en;
     }
 }
