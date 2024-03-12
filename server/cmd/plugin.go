@@ -107,7 +107,7 @@ func (p *Plugin) OnConfigurationChange() error {
 	serverConfig.FileSettings.SetDefaults(true)
 	config := serverConfig.FileSettings.ToFileBackendSettings(license != nil && *license.Features.Compliance)
 	//FIXME 强制设置为false先可用
-	//config.AmazonS3SSL = false
+	config.AmazonS3SSL = false
 	p.Filestore, configuration.Error = filestore.NewFileBackend(config)
 	if configuration.Error != nil {
 		time.AfterFunc(100*time.Millisecond, func() {
