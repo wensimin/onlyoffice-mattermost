@@ -78,14 +78,14 @@ func _saveFile(c model.Callback, a api.PluginAPI) error {
 
 	_, storeErr := a.Filestore.WriteFile(resp.Body, fileInfo.Path)
 	if storeErr != nil {
+		debugMsg = fmt.Sprintf("保存文件失败 %s", storeErr)
+		// FIXME debug message
+		a.Bot.BotCreateReply(debugMsg, post.ChannelId, post.Id)
 		return &FilePersistenceError{
 			FileID: c.FileID,
 			Reason: storeErr.Error(),
 		}
 	}
-	debugMsg = fmt.Sprintf("保存文件失败 %s", storeErr)
-	// FIXME debug message
-	a.Bot.BotCreateReply(debugMsg, post.ChannelId, post.Id)
 
 	if c.Status == 2 {
 		last := c.Users[0]
