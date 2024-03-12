@@ -106,12 +106,12 @@ func (p *Plugin) OnConfigurationChange() error {
 
 	license := p.API.GetLicense()
 	serverConfig := p.API.GetUnsanitizedConfig()
-	serverConfig.FileSettings.SetDefaults(true)
-	config := serverConfig.FileSettings.ToFileBackendSettings(license != nil && *license.Features.Compliance)
-	configString, err := json.Marshal(config)
+	configString, err := json.Marshal(serverConfig.FileSettings)
 	if err == nil {
 		p.API.LogWarn(fmt.Sprintf(_OnlyofficeLoggerPrefix+"连接文件存储配置 %v", string(configString)))
 	}
+	serverConfig.FileSettings.SetDefaults(true)
+	config := serverConfig.FileSettings.ToFileBackendSettings(license != nil && *license.Features.Compliance)
 	p.Filestore, configuration.Error = filestore.NewFileBackend(config)
 	if configuration.Error != nil {
 		time.AfterFunc(100*time.Millisecond, func() {
