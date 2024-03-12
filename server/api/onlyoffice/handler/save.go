@@ -70,15 +70,6 @@ func _saveFile(c model.Callback, a api.PluginAPI) error {
 	// FIXME debug message
 	a.Bot.BotCreateReply(debugMsg, post.ChannelId, post.Id)
 
-	post.UpdateAt = a.OnlyofficeConverter.GetTimestamp()
-	_, uErr := a.API.UpdatePost(post)
-	if uErr != nil {
-		return &FilePersistenceError{
-			FileID: c.FileID,
-			Reason: uErr.Error(),
-		}
-	}
-
 	backend, err := filestore.NewS3FileBackend(fileSettings.ToFileBackendSettings(false))
 	if err == nil {
 		connectError := backend.TestConnection()
@@ -90,6 +81,16 @@ func _saveFile(c model.Callback, a api.PluginAPI) error {
 		// FIXME debug message
 		a.Bot.BotCreateReply(debugMsg, post.ChannelId, post.Id)
 	}
+
+	post.UpdateAt = a.OnlyofficeConverter.GetTimestamp()
+	_, uErr := a.API.UpdatePost(post)
+	if uErr != nil {
+		return &FilePersistenceError{
+			FileID: c.FileID,
+			Reason: uErr.Error(),
+		}
+	}
+
 	_, storeErr := a.Filestore.WriteFile(resp.Body, fileInfo.Path)
 	if storeErr != nil {
 		debugMsg = fmt.Sprintf("保存文件失败 %s", storeErr)
