@@ -21,10 +21,8 @@ import (
 	"fmt"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api"
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api/onlyoffice/model"
-	"github.com/mattermost/mattermost-server/v6/shared/filestore"
 	"github.com/pkg/errors"
 	"net/http"
-	"reflect"
 )
 
 var _ = Registry.RegisterHandler(2, _saveFile)
@@ -70,10 +68,6 @@ func _saveFile(c model.Callback, a api.PluginAPI) error {
 	// FIXME debug message
 	a.Bot.BotCreateReply(debugMsg, post.ChannelId, post.Id)
 
-	//printfStore(a.Filestore, func(message string) {
-	//	a.Bot.BotCreateReply(message, post.ChannelId, post.Id)
-	//})
-
 	connectError := a.Filestore.TestConnection()
 	debugMsg = fmt.Sprintf("新建测试连接报错 %s", connectError)
 	// FIXME debug message
@@ -117,13 +111,4 @@ func _saveFile(c model.Callback, a api.PluginAPI) error {
 	}
 
 	return nil
-}
-
-func printfStore(fileStore filestore.FileBackend, f func(message string)) {
-	v := reflect.ValueOf(fileStore)
-	endpoint := v.FieldByName("endpoint")
-	secure := v.FieldByName("secure")
-	prefix := v.FieldByName("pathPrefix")
-	msg := fmt.Sprintf("目前端点:%v 安全:%v 前缀:%v ", endpoint, secure, prefix)
-	f(msg)
 }

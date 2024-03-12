@@ -112,6 +112,14 @@ func (p *Plugin) OnConfigurationChange() error {
 		})
 		return nil
 	}
+	err := p.Filestore.TestConnection()
+	if err != nil {
+		p.API.LogWarn(_OnlyofficeLoggerPrefix+"测试连接存储失败 %v", err)
+		time.AfterFunc(100*time.Millisecond, func() {
+			p.API.DisablePlugin(PluginID)
+		})
+		return nil
+	}
 
 	p.API.LogInfo(_OnlyofficeLoggerPrefix + "The server responded without errors")
 	return nil
