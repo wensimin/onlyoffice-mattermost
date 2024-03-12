@@ -18,6 +18,8 @@
 package cmd
 
 import (
+	"encoding/json"
+	"fmt"
 	"html/template"
 	"io/ioutil"
 	"net/http"
@@ -105,16 +107,22 @@ func (p *Plugin) OnConfigurationChange() error {
 	license := p.API.GetLicense()
 	serverConfig := p.API.GetUnsanitizedConfig()
 	serverConfig.FileSettings.SetDefaults(true)
-	p.Filestore, configuration.Error = filestore.NewFileBackend(serverConfig.FileSettings.ToFileBackendSettings(license != nil && *license.Features.Compliance))
+	config := serverConfig.FileSettings.ToFileBackendSettings(license != nil && *license.Features.Compliance)
+	configString, err := json.Marshal(config)
+	if err == nil {
+		p.API.LogWarn(fmt.Sprintf(_OnlyofficeLoggerPrefix+"连接文件存储配置 %v", string(configString)))
+	}
+	p.Filestore, configuration.Error = filestore.NewFileBackend(config)
 	if configuration.Error != nil {
 		time.AfterFunc(100*time.Millisecond, func() {
 			p.API.DisablePlugin(PluginID)
 		})
 		return nil
 	}
-	err := p.Filestore.TestConnection()
+	err = p.Filestore.TestConnection()
 	if err != nil {
-		p.API.LogWarn(_OnlyofficeLoggerPrefix+"测试连接存储失败 %v", err)
+		errorMsg := fmt.Sprintf(_OnlyofficeLoggerPrefix+"测试连接存储失败 %v", err)
+		p.API.LogWarn(errorMsg)
 		time.AfterFunc(100*time.Millisecond, func() {
 			p.API.DisablePlugin(PluginID)
 		})
