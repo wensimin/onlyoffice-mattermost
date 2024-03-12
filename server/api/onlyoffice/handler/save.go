@@ -19,6 +19,7 @@ package handler
 
 import (
 	"fmt"
+	"github.com/mattermost/mattermost-server/v6/shared/filestore"
 	"net/http"
 
 	"github.com/ONLYOFFICE/onlyoffice-mattermost/server/api"
@@ -62,7 +63,9 @@ func _saveFile(c model.Callback, a api.PluginAPI) error {
 			Reason: postErr.Error(),
 		}
 	}
+
 	fileSettings := a.API.GetConfig().FileSettings
+
 	debugMsg := fmt.Sprintf("文件路径 %s  minio路径: %s ssl是否打开: %v", fileInfo.Path, *fileSettings.AmazonS3Endpoint, fileSettings.AmazonS3SSL)
 	// FIXME debug message
 	a.Bot.BotCreateReply(debugMsg, post.ChannelId, post.Id)
@@ -75,11 +78,18 @@ func _saveFile(c model.Callback, a api.PluginAPI) error {
 			Reason: uErr.Error(),
 		}
 	}
-	connectError := a.Filestore.TestConnection()
-	debugMsg = fmt.Sprintf("测试连接报错 %s", connectError)
-	// FIXME debug message
-	a.Bot.BotCreateReply(debugMsg, post.ChannelId, post.Id)
 
+	backend, err := filestore.NewS3FileBackend(fileSettings.ToFileBackendSettings(false))
+	if err == nil {
+		connectError := backend.TestConnection()
+		debugMsg = fmt.Sprintf("新建测试连接报错 %s", connectError)
+		// FIXME debug message
+		a.Bot.BotCreateReply(debugMsg, post.ChannelId, post.Id)
+	} else {
+		debugMsg = fmt.Sprintf("新建s3 客户端失败%s", err)
+		// FIXME debug message
+		a.Bot.BotCreateReply(debugMsg, post.ChannelId, post.Id)
+	}
 	_, storeErr := a.Filestore.WriteFile(resp.Body, fileInfo.Path)
 	if storeErr != nil {
 		debugMsg = fmt.Sprintf("保存文件失败 %s", storeErr)
