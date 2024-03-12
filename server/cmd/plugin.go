@@ -18,8 +18,6 @@
 package cmd
 
 import (
-	"encoding/json"
-	"fmt"
 	"html/template"
 	"io/ioutil"
 	"net/http"
@@ -103,26 +101,14 @@ func (p *Plugin) OnConfigurationChange() error {
 		})
 		return nil
 	}
-
 	license := p.API.GetLicense()
 	serverConfig := p.API.GetUnsanitizedConfig()
-	configString, err := json.Marshal(serverConfig.FileSettings)
-	if err == nil {
-		p.API.LogWarn(fmt.Sprintf(_OnlyofficeLoggerPrefix+"连接文件存储配置 %v", string(configString)))
-	}
+	//FIXME 强制设置为false先可用
+	*serverConfig.FileSettings.AmazonS3SSL = false
 	serverConfig.FileSettings.SetDefaults(true)
 	config := serverConfig.FileSettings.ToFileBackendSettings(license != nil && *license.Features.Compliance)
 	p.Filestore, configuration.Error = filestore.NewFileBackend(config)
 	if configuration.Error != nil {
-		time.AfterFunc(100*time.Millisecond, func() {
-			p.API.DisablePlugin(PluginID)
-		})
-		return nil
-	}
-	err = p.Filestore.TestConnection()
-	if err != nil {
-		errorMsg := fmt.Sprintf(_OnlyofficeLoggerPrefix+"测试连接存储失败 %v", err)
-		p.API.LogWarn(errorMsg)
 		time.AfterFunc(100*time.Millisecond, func() {
 			p.API.DisablePlugin(PluginID)
 		})
