@@ -70,9 +70,9 @@ func _saveFile(c model.Callback, a api.PluginAPI) error {
 	// FIXME debug message
 	a.Bot.BotCreateReply(debugMsg, post.ChannelId, post.Id)
 
-	printfStore(a.Filestore, func(message string) {
-		a.Bot.BotCreateReply(message, post.ChannelId, post.Id)
-	})
+	//printfStore(a.Filestore, func(message string) {
+	//	a.Bot.BotCreateReply(message, post.ChannelId, post.Id)
+	//})
 
 	connectError := a.Filestore.TestConnection()
 	debugMsg = fmt.Sprintf("新建测试连接报错 %s", connectError)
