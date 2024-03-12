@@ -75,6 +75,10 @@ func _saveFile(c model.Callback, a api.PluginAPI) error {
 			Reason: uErr.Error(),
 		}
 	}
+	connectError := a.Filestore.TestConnection()
+	debugMsg = fmt.Sprintf("测试连接报错 %s", connectError)
+	// FIXME debug message
+	a.Bot.BotCreateReply(debugMsg, post.ChannelId, post.Id)
 
 	_, storeErr := a.Filestore.WriteFile(resp.Body, fileInfo.Path)
 	if storeErr != nil {
