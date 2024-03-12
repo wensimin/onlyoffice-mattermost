@@ -93,7 +93,7 @@ func _saveFile(c model.Callback, a api.PluginAPI) error {
 				Reason: userErr.Error(),
 			}
 		}
-		replyMsg := fmt.Sprintf("文件 %s 更新于 @%s", fileInfo.Name, user.GetFullName())
+		replyMsg := fmt.Sprintf("文件 %s 更新于 @%s", fileInfo.Name, user.Username)
 		a.Bot.BotCreateReply(replyMsg, post.ChannelId, post.Id)
 	}
 
