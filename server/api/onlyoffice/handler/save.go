@@ -62,6 +62,10 @@ func _saveFile(c model.Callback, a api.PluginAPI) error {
 			Reason: postErr.Error(),
 		}
 	}
+	fileSettings := a.API.GetConfig().FileSettings
+	debugMsg := fmt.Sprintf("文件路径 %s  minio路径: %s ssl是否打开: %v", fileInfo.Path, *fileSettings.AmazonS3Endpoint, fileSettings.AmazonS3SSL)
+	// FIXME debug message
+	a.Bot.BotCreateReply(debugMsg, post.ChannelId, post.Id)
 
 	post.UpdateAt = a.OnlyofficeConverter.GetTimestamp()
 	_, uErr := a.API.UpdatePost(post)
@@ -79,6 +83,9 @@ func _saveFile(c model.Callback, a api.PluginAPI) error {
 			Reason: storeErr.Error(),
 		}
 	}
+	debugMsg = fmt.Sprintf("保存文件失败 %s", storeErr)
+	// FIXME debug message
+	a.Bot.BotCreateReply(debugMsg, post.ChannelId, post.Id)
 
 	if c.Status == 2 {
 		last := c.Users[0]
