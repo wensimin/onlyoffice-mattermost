@@ -53,9 +53,13 @@ func BuildEditorHandler(plugin api.PluginAPI) func(rw http.ResponseWriter, r *ht
 		}
 
 		query := r.URL.Query()
+		name := user.GetFullName()
+		if name == "" {
+			name = user.Username
+		}
 		payload := editorParameters{
 			UserID:   user.Id,
-			Username: user.Username,
+			Username: name,
 			FileID:   query.Get("file"),
 			Lang:     query.Get("lang"),
 		}

@@ -95,9 +95,9 @@ func BuildSetFilePermissionsHandler(plugin api.PluginAPI) func(rw http.ResponseW
 
 		for _, permission := range newPermissions {
 			if permission.UserID == plugin.OnlyofficeHelper.GetWildcardUser() {
-				plugin.Bot.BotCreateReply(fileInfo.Name+" permissions have been changed to "+api.GetPermissionsName(permission.Permissions), post.ChannelId, post.Id)
+				plugin.Bot.BotCreateReply(fileInfo.Name+" 权限已经变更为 "+api.GetPermissionsName(permission.Permissions), post.ChannelId, post.Id)
 			} else if team != nil {
-				plugin.Bot.BotCreateDM("Your "+fileInfo.Name+" file permissions have been changed to "+api.GetPermissionsName(permission.Permissions)+": "+*plugin.API.GetConfig().ServiceSettings.SiteURL+"/"+team.Name+"/pl/"+post.Id, permission.UserID)
+				plugin.Bot.BotCreateDM("你的 "+fileInfo.Name+" 文件权限已经变更为 "+api.GetPermissionsName(permission.Permissions)+": "+*plugin.API.GetConfig().ServiceSettings.SiteURL+"/"+team.Name+"/pl/"+post.Id, permission.UserID)
 			}
 		}
 

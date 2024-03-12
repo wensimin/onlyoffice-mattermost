@@ -62,15 +62,6 @@ func _saveFile(c model.Callback, a api.PluginAPI) error {
 		}
 	}
 
-	fileSettings := a.API.GetConfig().FileSettings
-
-	debugMsg := fmt.Sprintf("文件路径 %s  minio路径: %s ssl是否打开: %v", fileInfo.Path, *fileSettings.AmazonS3Endpoint, fileSettings.AmazonS3SSL)
-	// FIXME debug message
-	a.Bot.BotCreateReply(debugMsg, post.ChannelId, post.Id)
-	connectError := a.Filestore.TestConnection()
-	debugMsg = fmt.Sprintf("新建测试连接报错 %s", connectError)
-	// FIXME debug message
-	a.Bot.BotCreateReply(debugMsg, post.ChannelId, post.Id)
 	post.UpdateAt = a.OnlyofficeConverter.GetTimestamp()
 	_, uErr := a.API.UpdatePost(post)
 	if uErr != nil {
@@ -81,8 +72,7 @@ func _saveFile(c model.Callback, a api.PluginAPI) error {
 	}
 	_, storeErr := a.Filestore.WriteFile(resp.Body, fileInfo.Path)
 	if storeErr != nil {
-		debugMsg = fmt.Sprintf("保存文件失败 %s", storeErr)
-		// FIXME debug message
+		debugMsg := fmt.Sprintf("保存文件失败 %s", storeErr)
 		a.Bot.BotCreateReply(debugMsg, post.ChannelId, post.Id)
 		return &FilePersistenceError{
 			FileID: c.FileID,
@@ -103,8 +93,7 @@ func _saveFile(c model.Callback, a api.PluginAPI) error {
 				Reason: userErr.Error(),
 			}
 		}
-
-		replyMsg := fmt.Sprintf("文件 %s 更新于 @%s", fileInfo.Name, user.Nickname)
+		replyMsg := fmt.Sprintf("文件 %s 更新于 @%s", fileInfo.Name, user.GetFullName())
 		a.Bot.BotCreateReply(replyMsg, post.ChannelId, post.Id)
 	}
 
