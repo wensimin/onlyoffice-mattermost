@@ -18,6 +18,7 @@
 package cmd
 
 import (
+	"fmt"
 	"html/template"
 	"io/ioutil"
 	"net/http"
@@ -106,6 +107,7 @@ func (p *Plugin) OnConfigurationChange() error {
 
 	serverConfig.FileSettings.SetDefaults(true)
 	config := serverConfig.FileSettings.ToFileBackendSettings(license != nil && *license.Features.Compliance)
+	p.API.LogWarn(fmt.Sprintf("ssl: %v", config.AmazonS3SSL))
 	//FIXME 强制设置为false先可用
 	config.AmazonS3SSL = false
 	p.Filestore, configuration.Error = filestore.NewFileBackend(config)
